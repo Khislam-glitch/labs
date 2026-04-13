@@ -62,7 +62,12 @@ bool hasAccount(int id) {
 int get_amount(){
  int n;	
  printf("enter the amount of money: ");	
- scanf("%d",&n);
+
+   if(scanf("%d",&n) != 1 || n <= 0){
+        printf("Invalid amount!\n");
+        return 0;
+    }
+
   return n;
 }
 
@@ -73,7 +78,13 @@ void deposit(int client_id, int amount){
         return;
     }
 
+   if(accounts[index].blocked){
+    printf("Account is blocked! Cannot perform transaction.\n");
+    return;
+   }
+
    accounts[index].balance += amount;
+   printf("Deposit successful! New balance: $%d\n", accounts[index].balance);
 }
 
 void withdraw(int client_id, int amount){
@@ -82,16 +93,41 @@ void withdraw(int client_id, int amount){
         printf("Account not found!\n");
         return;
     }
+   
+   if(accounts[index].blocked ){
+    printf("Account is blocked! Cannot perform transaction.\n");
+    return;
+    }
+
+   if(amount <= 0){
+        printf("Invalid amount!\n");
+        return;
+    }
+    if(accounts[index].balance < amount){
+        printf("Insufficient balance! Available: $%d\n", accounts[index].balance);
+        return;
+    }
 
    accounts[index].balance -= amount;
+   printf("Withdrawal successful! New balance: $%d\n", accounts[index].balance);
 }
 
 void transfer(int send_id, int resive_id, int amount){
   int s_index = find_account_index(send_id);
   int r_index = find_account_index(resive_id);
   if(s_index == -1 || r_index == -1){
-        printf("Account not found!\n");
-        return;
+    printf("Account not found!\n");
+    return;
+    }
+
+  if(accounts[s_index].blocked || accounts[r_index].blocked){
+    printf("Account is blocked! Cannot perform transaction.\n");
+    return;
+    }
+
+  if(accounts[s_index].balance < amount){
+    printf("Insufficient balance for transfer!\n");
+    return;
     }
 
    accounts[s_index].balance -= amount;
@@ -109,7 +145,7 @@ void modify_type(int client_id){
    printf("enter the type you want to transfer:");
    printf("  'p' - Personal (age 18+)\n");
    printf("  'c' - Commercial \n");
-   scanf("%c",&choice);
+   scanf(" %c",&choice);
    accounts[index].type = tolower(choice);
 	
 }
@@ -277,8 +313,10 @@ void print_menu() {
 
 void account_functions() {
     int choice,id,resive_id,money;
+   
     printf("enter your id");
     scanf("%d",&id);
+  do{  
     printf("\n╔══════════════════════════════════════╗\n");
     printf("║     BANK ACCOUNT MANAGEMENT SYSTEM   ║\n");
     printf("╠══════════════════════════════════════╣\n");
@@ -291,7 +329,6 @@ void account_functions() {
     printf("╚══════════════════════════════════════╝\n");
     printf("Enter your choice: ");
     scanf("%d", &choice);
-
     switch (choice){
       case 1:
 	      money = get_amount();
@@ -325,7 +362,7 @@ void account_functions() {
              printf("invalid option \n");
          return;
     }
-
+ } while (choice != 6);
 }
 
 int main() {
