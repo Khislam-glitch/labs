@@ -8,9 +8,7 @@ struct Node {
   struct Node *next;
 };
 
-/* ─────────────────────────────────────────────
- * FUNCTION DECLARATIONS
- * ───────────────────────────────────────────── */
+
 
 struct Node *createNode(int data);
 
